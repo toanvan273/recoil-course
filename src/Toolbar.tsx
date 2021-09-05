@@ -18,7 +18,9 @@ export const Toolbar = () => {
         >
             <IconButton
                 onClick={()=>{
-                    setElements(elements => [...elements, elements.length])
+                    setElements(elements => {
+                        console.log({elements})
+                         return [...elements, elements.length]})
                 }}
                 aria-label="Add rectangle"
                 icon={<Icon style={{width: 24, height: 24}} as={Square} />}
