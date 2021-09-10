@@ -1,7 +1,8 @@
 
 import { Rectangle} from './components/Rectangle/Rectangle'
 import {PageContainer} from './PageContainer'
-import {Toolbar} from './Toolbar'
+// import {Toolbar} from './Toolbar'
+import {Toolbar} from './ToolbarV2'
 import {atom, useRecoilValue, useSetRecoilState} from 'recoil'
 import { EditProperties } from './EditProperties'
 
