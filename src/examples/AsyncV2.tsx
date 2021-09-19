@@ -1,6 +1,8 @@
+import { Button } from '@chakra-ui/button'
 import {Container, Heading, Text} from '@chakra-ui/layout'
 import {Select} from '@chakra-ui/select'
 import { Suspense ,useState} from 'react'
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary'
 // import { useState } from 'react-router/node_modules/@types/react'
 import { atomFamily, selectorFamily, useRecoilValue, useSetRecoilState} from 'recoil'
 import { getWeather } from './fakeApi'
@@ -58,8 +60,7 @@ const UserWeather = ({userId}: {userId: number}) => {
 }
 const UserData = ({userId} : {userId : number}) => {
     const user = useRecoilValue(userState(userId))
-//    const weather = useRecoilValue(weatherState(userId))
-//    console.log({weather})
+
     return (
         <div>
         <Heading as="h2" size="md" mb={1}>
@@ -75,6 +76,20 @@ const UserData = ({userId} : {userId : number}) => {
             <UserWeather userId={userId} />
         </Suspense>
     </div>
+    )
+}
+
+const ErrorFallBack = ({error, resetErrorBoundary}: FallbackProps) => {
+    return (
+        <div>
+            <Heading as="h2" size="md" mb={1}>
+                Something went wrong
+            </Heading>
+            <Text>
+                {error.message}
+            </Text>
+            <Button onClick={resetErrorBoundary}>Ok</Button>
+        </div>
     )
 }
 
@@ -104,9 +119,14 @@ export const Async = () => {
                 <option value="4">User 4 (throw)</option>
             </Select>
             { userId !== undefined && 
+            <ErrorBoundary FallbackComponent={ErrorFallBack}
+            onReset={()=>{setUserId(undefined)}}
+            resetKeys={[userId]}
+            >
             <Suspense fallback={<div>Load...</div>}>
                 <UserData userId={userId} />
             </Suspense>
+            </ErrorBoundary>
             }
        
         </Container>
