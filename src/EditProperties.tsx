@@ -1,9 +1,11 @@
 import {InputGroup, InputRightElement, NumberInput, NumberInputField, Text, VStack} from '@chakra-ui/react'
-import {selectorFamily, useRecoilState, useRecoilValue} from 'recoil'
+import {selector, selectorFamily, useRecoilState, useRecoilValue} from 'recoil'
 import { selectedElementState } from './Canvas'
 import { elementState } from './components/Rectangle/Rectangle'
 import _ from 'lodash'
 import produce from 'immer'
+import { ImageInfo, ImageInfoFallback } from './ImageInfo'
+import { Suspense } from 'react'
 
 export const editProperty = selectorFamily<any, {path: string, id: number}>({
     key: 'editProperty',
@@ -24,8 +26,19 @@ export const editProperty = selectorFamily<any, {path: string, id: number}>({
     }
 })
 
+const hasImageState = selector({
+    key: 'hasImage',
+    get: ({get}) => {
+        const id = get(selectedElementState)
+        if(id === null) return;
+
+        const element = get(elementState(id))
+        return element.image !== undefined
+    }
+})
 export const EditProperties = () => {
     const selectedElement = useRecoilValue(selectedElementState)
+    const hasImage = useRecoilValue(hasImageState)
     if(selectedElement ==  null) return null
     return (
         <Card>
@@ -38,6 +51,15 @@ export const EditProperties = () => {
                 <Property label="Width" path="style.size.width" id={selectedElement}/>
                 <Property label="Height" path="style.size.height" id={selectedElement}/>
             </Section>
+
+            {hasImage && 
+                <Section heading="Image">
+                    <Suspense fallback={ImageInfoFallback}>
+                        <ImageInfo />
+                    </Suspense>
+                </Section>
+                }
+            
         </Card>
     )
 }
